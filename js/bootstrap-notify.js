@@ -20,9 +20,10 @@
     if (typeof define === 'function' && define.amd) {
         // AMD. Register as an anonymous module.
         define(['jquery'], factory);
-    } else if (typeof exports === 'object') {
-        // Node/CommonJS
-        factory(require('jquery'));
+    // } else if (typeof exports === 'object') {
+    //     console.warn('WILL INIT JQUERY')
+    //     // Node/CommonJS
+    //     factory(require('jquery'));
     } else {
         // Browser globals
         factory(jQuery);
@@ -402,7 +403,7 @@
             });
         }
     });
-
+    debugger
     $.notify = function (content, options) {
         var plugin = new Notify(this, content, options);
         return plugin.notify;

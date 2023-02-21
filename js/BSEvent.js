@@ -37,11 +37,13 @@ class BSEvent {
 
     static resultHandlerMiddleware(func) {
         return async (event, payload) => {
-            const {awaitResult} = payload
             try {
                 const handlerResult = await func.apply(this, [event, payload])
-                if (awaitResult !== undefined) {
-                    BSEvent.handleResolveResult(awaitResult, handlerResult)
+                if (payload !== undefined) {
+                    const {awaitResult} = payload
+                    if (awaitResult !== undefined) {
+                        BSEvent.handleResolveResult(awaitResult, handlerResult)
+                    }
                 }
                 return handlerResult
             } catch (e) {
@@ -76,6 +78,9 @@ class BSEvent {
     }
 
     handlePayloadMutation(payload) {
+        if (payload === undefined) {
+            return
+        }
         const {awaitResult} = payload
         if (awaitResult !== undefined) {
             const resultKey = typeof awaitResult === 'string' ? awaitResult : new Date().getTime()
@@ -99,7 +104,7 @@ class BSEvent {
         !this.exists && console.warn(`Event with name [${this.name}] is not registered. Still emitting...`)
         payload = this.handlePayloadMutation(payload)
         await ipcRenderer.invoke('bsevent', {event: this.name, data: payload})
-        if (payload.awaitResult !== undefined) {
+        if (payload?.awaitResult !== undefined) {
             return BSEvent.results[payload.awaitResult]?.promise
         }
     }
